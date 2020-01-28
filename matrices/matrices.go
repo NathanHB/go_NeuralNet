@@ -11,12 +11,12 @@ type Matrix struct {
 	data []float64
 }
 
-func printMatrix(m Matrix) {
+func PrintMatrix(m Matrix) {
 	fmt.Printf("h: %d | w: %d\n", m.h, m.w)
 	fmt.Println(m.data)
 }
 
-func compareMatrices(a, b Matrix) bool {
+func CompareMatrices(a, b Matrix) bool {
 	// return a == b
 
 	if a.h != b.h || a.w != b.w {
