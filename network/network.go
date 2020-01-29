@@ -45,6 +45,8 @@ func InitNewNetwork(networkSig []uint) Network {
 	return net
 }
 
-func FeedForward(inputs matrices.Matrix) []float64 {
+func FeedForward(inputs matrices.Matrix, net Network) []float64 {
+	// takes the input matrix 28x28 and returns the output 1x10 after
+	// putting it through the network.
 
 }
