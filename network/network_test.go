@@ -10,3 +10,7 @@ func TestInitNewNetwork(t *testing.T) {
 	PrintNetwork(net)
 }
 
+func TestFeedForward(t *testing.T) {
+}
+
+
