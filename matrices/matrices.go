@@ -7,24 +7,24 @@ import (
 )
 
 type Matrix struct {
-	h, w uint // height and width of the matrix
-	data []float64
+	H, W uint // height and width of the matrix
+	Data []float64
 }
 
 func PrintMatrix(m Matrix) {
-	fmt.Printf("h: %d | w: %d\n", m.h, m.w)
-	fmt.Println(m.data)
+	fmt.Printf("h: %d | w: %d\n", m.H, m.W)
+	fmt.Println(m.Data)
 }
 
 func CompareMatrices(a, b Matrix) bool {
 	// return a == b
 
-	if a.h != b.h || a.w != b.w {
+	if a.H != b.H || a.W != b.W {
 		return false
 	}
 
-	for i := uint(0) ; i < a.h * a.w ; i++ {
-		if  a.data[i] != b.data[i] {
+	for i := uint(0) ; i < a.H * a.W ; i++ {
+		if  a.Data[i] != b.Data[i] {
 			return false
 		}
 	}
@@ -37,13 +37,13 @@ func NewRandomMatrix(h, w uint) Matrix {
 
 	rand.Seed(time.Now().UnixNano()) // seed the rand to get different output each run
 
-	data := make([]float64, h * w) // setup the data
+	Data := make([]float64, h * w) // setup the.Data
 
 	for i := uint(0) ; i < h * w ; i++ {
-		data[i] = rand.NormFloat64() // assign random value to data[i]
+		Data[i] = rand.NormFloat64() // assign random value to.Data[i]
 	}
 
-	c := Matrix{h, w, data}
+	c := Matrix{h, w, Data}
 
 	return c
 }
@@ -52,24 +52,24 @@ func MatrixApply(m *Matrix, f func (float64) float64) {
 	// take a matrix and a funciton and apply the function to all elements
 	// in matrix
 
-	for i := uint(0) ; i < m.h * m.w ; i++ {
-		m.data[i] = f(m.data[i])
+	for i := uint(0) ; i < m.H * m.W ; i++ {
+		m.Data[i] = f(m.Data[i])
 	}
 }
 
 func MatrixMultiply (a, b Matrix) (Matrix) {
 	// return a × b
 
-	if a.w != b.h {
+	if a.W != b.H {
 		panic("Matrix Mult")
 	}
 
-	c := Matrix{h: a.h, w: b.w, data: make([]float64, a.h * b.w)}
+	c := Matrix{H: a.H, W: b.W, Data: make([]float64, a.H * b.W)}
 
-	for i := uint(0) ; i < a.h ; i++ {
-		for j := uint(0) ; j < b.w ; j++ {
-			for k := uint(0) ; k < a.w ; k++ {
-				c.data[i * c.w + j] += (a.data[i * a.w + k] * b.data[k * b.w + j])
+	for i := uint(0) ; i < a.H ; i++ {
+		for j := uint(0) ; j < b.W ; j++ {
+			for k := uint(0) ; k < a.W ; k++ {
+				c.Data[i * c.W + j] += (a.Data[i * a.W + k] * b.Data[k * b.W + j])
 			}
 		}
 	}
@@ -80,15 +80,15 @@ func MatrixMultiply (a, b Matrix) (Matrix) {
 func MatrixAdd(a, b Matrix) (Matrix) {
 	// return a + b
 
-	if a.h != b.h || a.w != b.w {
+	if a.H != b.H || a.W != b.W {
 		panic("matrix add")
 	}
 
-	c := Matrix{h: a.h, w: a.w, data: make([]float64, a.h * a.w)}
+	c := Matrix{H: a.H, W: a.W, Data: make([]float64, a.H * a.W)}
 
-	for i := uint(0) ; i < a.h ; i++ {
-		for j := uint(0) ; j < a.w ; j++ {
-			c.data[i * c.w + j] = a.data[i * a.w + j] + b.data[i * b.w + j]
+	for i := uint(0) ; i < a.H ; i++ {
+		for j := uint(0) ; j < a.W ; j++ {
+			c.Data[i * c.W + j] = a.Data[i * a.W + j] + b.Data[i * b.W + j]
 		}
 	}
 

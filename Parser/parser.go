@@ -63,10 +63,9 @@ func printData(header idxFileFormat) {
 
 	start := 4 * (header.dataDim) // define where the data starts
 
-	for n := int32(0); n < header.dims[0]/1000; n++ {
+	for n := int32(0); n < header.dims[0]/10000; n++ {
 		for i := int32(0); i < header.dims[2]; i++ {
 			for j := int32(0); j < header.dims[1]; j++ {
-
 				if pixel := int32(header.bytes[n*header.dims[1]*header.dims[2]+
 					i*header.dims[2]+j+start+5]); pixel != 0 {
 					fmt.Printf("0 ")
