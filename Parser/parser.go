@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"encoding/binary"
@@ -8,9 +8,9 @@ import (
 
 type idxFileFormat struct {
 	// structure containing info on the idx file to parse
-	dataType   int32
-	dataDim    int32
-	dims       []int32
+	dataType   int32 // unsigned int most of the time
+	dataDim    int32 // dimension of the data
+	dims       []int32 // nb of image; nb of rows; nb of columns
 	pixelCount int32
 	bytes      []byte
 }
@@ -33,12 +33,13 @@ func parseHeader(data *os.File, idxFile *idxFileFormat) {
 	bytes := make([]byte, size) // make data array and put data in it with data.Read()
 	_, err = data.Read(bytes)
 
-	dataType := int32(bytes[2]) // Parse the data type and dimension
-	dim := int32(bytes[3])
-
+// Parse the data type and dimension
+	dataType := int32(bytes[2]) // the third byte encode the type of data
+    dim := int32(bytes[3]) // fourth byte encode the number of dimensions
 	dims := make([]int32, dim) // make dims array and parse them
 	for i := int32(0); i < dim; i++ {
-		dims[i] = int32(binary.BigEndian.Uint32(bytes[4+4*i : 8+4*i]))
+        // start at fourth byte and go four by four
+		dims[i] = int32(binary.BigEndian.Uint32(bytes[4 + (4 * i) : 8 + (4 * i)]))
 	}
 
 	// Put info into struct
@@ -63,7 +64,7 @@ func printData(header idxFileFormat) {
 
 	start := 4 * (header.dataDim) // define where the data starts
 
-	for n := int32(0); n < header.dims[0]/10000; n++ {
+	for n := int32(0); n < header.dims[0]; n++ {
 		for i := int32(0); i < header.dims[2]; i++ {
 			for j := int32(0); j < header.dims[1]; j++ {
 				if pixel := int32(header.bytes[n*header.dims[1]*header.dims[2]+
@@ -72,7 +73,6 @@ func printData(header idxFileFormat) {
 				} else {
 					fmt.Printf(". ")
 				}
-
 			}
 			fmt.Println()
 		}
@@ -80,15 +80,36 @@ func printData(header idxFileFormat) {
 	}
 }
 
-func main() {
-	data, err := os.Open(os.Args[1]) // open the mnist file given in argument
-	defer data.Close()
+func MakeInputArray(imagesPath string, labelsPath string) ([][]float64, []float64) {
+
+	dataImage, err := os.Open(imagesPath)
+	defer dataImage.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	imageFile := idxFileFormat{} // create struct and put info in it
-	parseHeader(data, &imageFile)
-	printHeader(imageFile)
-	printData(imageFile)
+	dataLabels, err := os.Open(labelsPath)
+	defer dataLabels.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+    images := idxFileFormat{}
+    labels := idxFileFormat{}
+    parseHeader(dataImage, &images)
+    parseHeader(dataLabels, &labels)
+    imagesArray := make([][]float64, images.dims[0])
+    labelsArray := make([]float64, labels.dims[0])
+	start := 4 * (images.dataDim)  + 4 // define where the data starts
+    imageSize := images.dims[1] * images.dims[2] // imageSize := W * H
+
+	for n := int32(0); n < images.dims[0]; n++ { // go through the images
+        imagesArray[n] = make([]float64, imageSize)
+        for i := int32(0); i < imageSize; i++ {
+            imagesArray[n][i] = float64(images.bytes[n * imageSize + start + i])
+        }
+        labelsArray[n] = float64(labels.bytes[n + labels.dataDim * 4 + 4])
+	}
+
+    return imagesArray, labelsArray
 }

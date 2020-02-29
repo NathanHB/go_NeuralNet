@@ -32,6 +32,20 @@ func CompareMatrices(a, b Matrix) bool {
 	return true
 }
 
+func Zeros(h, w uint) Matrix {
+	// return a h × w matrix filled with 0s
+
+	Data := make([]float64, h * w) // setup the.Data
+
+	for i := uint(0) ; i < h * w ; i++ {
+		Data[i] = 0
+	}
+
+	c := Matrix{h, w, Data}
+
+	return c
+}
+
 func NewRandomMatrix(h, w uint) Matrix {
 	// return a h × w matrix with random values
 
@@ -71,6 +85,24 @@ func MatrixMultiply (a, b Matrix) (Matrix) {
 			for k := uint(0) ; k < a.W ; k++ {
 				c.Data[i * c.W + j] += (a.Data[i * a.W + k] * b.Data[k * b.W + j])
 			}
+		}
+	}
+
+	return c
+}
+
+func MatrixSubb(a, b Matrix) (Matrix) {
+	// return a - b
+
+	if a.H != b.H || a.W != b.W {
+		panic("matrix substract")
+	}
+
+	c := Matrix{H: a.H, W: a.W, Data: make([]float64, a.H * a.W)}
+
+	for i := uint(0) ; i < a.H ; i++ {
+		for j := uint(0) ; j < a.W ; j++ {
+			c.Data[i * c.W + j] = a.Data[i * a.W + j] - b.Data[i * b.W + j]
 		}
 	}
 
